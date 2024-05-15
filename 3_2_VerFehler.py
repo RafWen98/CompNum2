@@ -7,8 +7,10 @@ eps = 10e-16                                #machine accuracy (it think)
 accuracy = 100 * eps
 n_x = 10                                    #number of x samples where the function will be plotted
 spacing = np.linspace(0, 0.5*np.pi, n_x)          #Definitionsbereich
+k_max = 8
+x_values = [2 ** k for k in range(k_max + 1)] + [710]
 
-for i, x in enumerate(spacing):
+for i, x in enumerate(x_values):
     #init/reset values for iterator and Verfahrensfehler
     VF = 100
     n = 0

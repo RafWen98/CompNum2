@@ -14,6 +14,7 @@ def sinTaylor(x, n):
 def Verfahrensfehler(x, n, set_cos=1):
     """Verfahrensfehler per cosinus abschaetzung"""
     sum = pow(-1, n+1) * pow(x, (2 * n + 3)) / math.factorial(2 * n + 3) * set_cos
+    sum = sum / math.sin(x)
     return sum
 
 #Relativerfehler für 3.3
