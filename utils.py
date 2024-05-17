@@ -2,6 +2,7 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from mpmath import mp
 
 
 #Taylor expansion as defined by angabe
@@ -38,20 +39,62 @@ def Relativerfehler(x, n):
     rel = abs((tay-sin)/sin)
     return rel
 
+#
 def n_needed_for_accuracy(x_values, accuracy = 100*10e-16):
     """calulates the needed n for a desired accuracy of sin(x)"""
+    # Ensure x_values is a list
+    if isinstance(x_values, (float, int)):
+        x_values = [x_values]
+
     n_values = []
     VF_values = []
     for x in x_values:
-        VF = 100; n = 0
-        #loop as long as verfahrensfehler is bigger than accuracy
-        while VF > accuracy:
-            n = n+1
-            VF = abs(Verfahrensfehler(x, n, set_cos = 1))
-        n_values.append(n)
-        VF_values.append(VF)
+        if x % np.pi == 0:
+            n_values.append(1)
+            VF_values.append(0)
+        else:
+            VF = 100
+            n = 0
+            # Loop as long as verfahrensfehler is bigger than accuracy
+            while VF > accuracy:
+                n += 1
+                VF = abs(Verfahrensfehler(x, n, set_cos=1))  # Assuming Verfahrensfehler is defined elsewhere
+            n_values.append(n)
+            VF_values.append(VF)
 
-    return n_values, VF_values
+    if len(x_values) == 1:
+        return n_values[0], VF_values[0]
+    else:
+        return n_values, VF_values
+
+#Arg reduction code for 3.5
+def arg_redukt(x, result_multi = 1):
+
+    #check if x is not in [0,2pi]
+    if 2*np.pi <= x:
+        #calc modulo and reasign x
+        #k = x % (2 * np.pi)
+        k = int(x/(2*np.pi))
+        #print(k)
+        r = x - 2*k*np.pi
+        x=r
+    elif x < 0:
+        #swap signs of x and result_multi bc sin(x) = -sin(-x)
+        return arg_redukt(-x, -1)
+
+    #check if in [0,1pi] or [pi,2pi]
+    if x < np.pi:
+        x = x
+    elif np.pi <= x:
+        #project onto [0,1pi] and reverse result_multi 
+        x = x - np.pi
+        result_multi = result_multi * -1
+    else:
+        print("something didnt work out")
+    #sin(x) = result_multi * sinTaylor(x,n)
+    return x , result_multi 
+
+
 
 def plot_graph_and_table(*args, headers):
     """
@@ -95,7 +138,7 @@ def plot_graph_and_table(*args, headers):
     plt.savefig('figs/3_2.png')
     plt.show()
 
-def plot_table(*args, headers, int_columns=None, savefig = 'figs/unnamed.png'):
+def plot_table(*args, headers, int_columns=None, savefig = 'figs/unnamed.png', size = (9,4)):
     """
     Plots a table using the values from the input lists or numpy arrays with specified headers.
     
@@ -120,7 +163,7 @@ def plot_table(*args, headers, int_columns=None, savefig = 'figs/unnamed.png'):
                 df[col] = df[col].apply(lambda x: f"{int(x)}" if pd.notnull(x) else "")
     
     # Plot the table
-    fig, ax = plt.subplots(figsize=(9,4))
+    fig, ax = plt.subplots(figsize=size)
     ax.axis('tight')
     ax.axis('off')
     table = ax.table(cellText=df.values, colLabels=df.columns, cellLoc='center', loc='center', bbox=[0, 0, 1, 1])

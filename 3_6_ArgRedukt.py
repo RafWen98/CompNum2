@@ -3,6 +3,7 @@ import numpy as np                  #for everything numericals
 import matplotlib.pyplot as plt     #for plots
 import utils                        #utils.py file containg functions defined by us
 import qol
+from mpmath import mp
 
 
 def calculate_errors_nat_rev(x_values, n_values, order = 'nat'):
@@ -28,19 +29,38 @@ def calculate_errors_nat_rev(x_values, n_values, order = 'nat'):
     return errors
 
 if __name__ == "__main__":
-    savefig= 'figs/3_4.png'
+    savefig= 'figs/3_6.png'
     accuracy = 100*10e-16
     k_max = 8
 
-    #x_values = [2 ** k for k in range(k_max + 1)]
-    x_values = [2 ** k for k in range(k_max + 1)] + [710]
+    precision = 16
+    mp.dps = precision
 
+    x_values = [2 ** k for k in range(k_max + 1)] + [710]
     n_values, VF = utils.n_needed_for_accuracy(x_values, accuracy)
+
+    red_rel_error = []
+
+    for i, x in enumerate(x_values):
+        n = n_values[i]
+        x_red, res_multi = utils.arg_redukt(x)
+        approx_value = res_multi*utils.sinTaylorReversed(x, n)
+
+        #exact_value = math.sin(x)
+        exact_value = mp.sin(x)
+        #print(exact_value, " --- ", mp_value )
+        rel_error = abs(approx_value - exact_value) / abs(exact_value)
+
+        red_rel_error.append(rel_error)
+
+    red_rel_error = np.array(red_rel_error)
+
     Rel_errors = np.array(calculate_errors_nat_rev(x_values, n_values, order = 'nat'))
     Rel_errors_rev = np.array(calculate_errors_nat_rev(x_values, n_values, order = 'rev'))
 
-    diff = Rel_errors - Rel_errors_rev
+    #calc diff of reversed summation and reduced reversed summation
+    diff_rev = Rel_errors_rev - red_rel_error
 
-    headers = ['x', 'n', 'Rel_error_natuerlich', 'Rel_error_reversed', 'diff']
+    headers = ['x', 'n', 'Rel_error_natuerlich', 'Rel_error_reversed', 'Rel_error_reduced', 'diff']
     int_cols = ['x', 'n']
-    utils.plot_table(x_values, n_values, Rel_errors, Rel_errors_rev, diff, headers=headers, int_columns=int_cols, savefig=savefig)
+    utils.plot_table(x_values, n_values, Rel_errors, Rel_errors_rev, red_rel_error, diff_rev, headers=headers, int_columns=int_cols, savefig=savefig, size = (14,6))
