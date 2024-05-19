@@ -15,20 +15,51 @@ def sinTaylor(x, n):
     return sum
 
 #Taylor expansion as defined by angabe
-def sinTaylorReversed(x, n):
+def sinTaylorReversed(x_values, n_values):
     """Taylor expansion of sin(x) with n terms"""
-    sum = 0
-    for i in range(n):
-        j = n-i-1
-        #print(j)
-        sum += pow(-1, j) * pow(x, (2 * j + 1)) / math.factorial(2 * j + 1)
-    return sum
+
+    #so it can accept singel x input as well as an array of x_values as input
+    if isinstance(x_values, (float, int)):
+        x_values = [x_values]
+        n_values = [n_values]
+    
+    sum = []
+    for k, x in enumerate(x_values):
+        if x == 0 or x==np.pi or x==2*np.pi:
+            res = 0
+        else:
+            n = n_values[k]
+            res = 0
+            for i in range(n):
+                j = n-i-1
+                #print(j)
+                res += pow(-1, j) * pow(x, (2 * j + 1)) / math.factorial(2 * j + 1)
+        sum.append(res)
+
+    if len(x_values) == 1:
+        return sum[0]       #return single float when only single x was inputed
+    else:
+        return sum          
 
 #Verfahrensfehler as establsihed in angabe 3.2
-def Verfahrensfehler(x, n, set_cos=1):
+def Verfahrensfehler_raw(x, n, set_cos=1):
     """Verfahrensfehler per cosinus abschaetzung"""
     sum = pow(-1, n+1) * pow(x, (2 * n + 3)) / math.factorial(2 * n + 3) * set_cos
     sum = sum / math.sin(x)
+    return sum
+
+#Verfahrensfehler as establsihed in angabe 3.2 with conditions for x = 0, x=pi, x = 2pi
+def Verfahrensfehler(x, n, set_cos=1):
+    """Verfahrensfehler per cosinus abschaetzung"""
+    if x == 0:
+        sum = 0
+    elif x == np.pi:
+        sum = 0
+    elif x == 2*np.pi:
+        sum = 0
+    else:
+        sum = pow(-1, n+1) * pow(x, (2 * n + 3)) / math.factorial(2 * n + 3) * set_cos
+        sum = sum / math.sin(x)
     return sum
 
 #Relativerfehler für 3.3
