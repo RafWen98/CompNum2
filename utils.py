@@ -9,7 +9,7 @@ from mpmath import mp
 def sinTaylor(x, n):
     """Taylor expansion of sin(x) with n terms"""
     sum = 0
-    for i in range(n):
+    for i in range(n+1):
         #print(i)
         sum += pow(-1, i) * pow(x, (2 * i + 1)) / math.factorial(2 * i + 1)
     return sum
@@ -26,14 +26,17 @@ def sinTaylorReversed(x_values, n_values):
     sum = []
     for k, x in enumerate(x_values):
         if x == 0 or x==np.pi or x==2*np.pi:
-            res = 0
+            res = 0.0
         else:
             n = n_values[k]
-            res = 0
-            for i in range(n):
-                j = n-i-1
+            res = 0.0
+            for i in range(n+1):
+                j = n-i
                 #print(j)
-                res += pow(-1, j) * pow(x, (2 * j + 1)) / math.factorial(2 * j + 1)
+                #use mpmath module with 16 precsision bc otherwise int to large to convert to float
+                #fact = math.factorial(2 * j + 1)
+                fact = mp.factorial(2 * j + 1)      
+                res += pow(-1, j) * pow(x, (2 * j + 1)) / fact
         sum.append(res)
 
     if len(x_values) == 1:
@@ -99,26 +102,29 @@ def n_needed_for_accuracy(x_values, accuracy = 100*10e-16):
         return n_values, VF_values
 
 #Arg reduction code for 3.5
-def arg_redukt(x, result_multi = 1):
+def arg_redukt(x, result_multi = 1, prec = 25):
 
+    mp.prec = prec
+    pi = mp.pi
+    
     #check if x is not in [0,2pi]
-    if 2*np.pi <= x:
+    if 2*pi <= x:
         #calc modulo and reasign x
         #k = x % (2 * np.pi)
-        k = int(x/(2*np.pi))
+        k = int(x/(2*pi))
         #print(k)
-        r = x - 2*k*np.pi
+        r = x - 2*k*pi
         x=r
     elif x < 0:
         #swap signs of x and result_multi bc sin(x) = -sin(-x)
         return arg_redukt(-x, -1)
 
     #check if in [0,1pi] or [pi,2pi]
-    if x < np.pi:
+    if x < pi:
         x = x
-    elif np.pi <= x:
+    elif pi <= x:
         #project onto [0,1pi] and reverse result_multi 
-        x = x - np.pi
+        x = x - pi
         result_multi = result_multi * -1
     else:
         print("something didnt work out")

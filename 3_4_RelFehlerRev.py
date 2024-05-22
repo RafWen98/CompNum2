@@ -28,7 +28,7 @@ def calculate_errors_nat_rev(x_values, n_values, order = 'nat'):
     return errors
 
 if __name__ == "__main__":
-    savefig= 'figs/3_4.png'
+    savefig= 'CompNum2/figs/3_4.png'
     accuracy = 100*10e-16
     k_max = 8
 

@@ -29,14 +29,14 @@ def calculate_errors_nat_rev(x_values, n_values, order = 'nat'):
     return errors
 
 if __name__ == "__main__":
-    savefig= 'figs/3_6.png'
+    savefig= 'CompNum2/figs/3_6.png'
     accuracy = 100*10e-16
     k_max = 8
 
     precision = 16
     mp.dps = precision
 
-    x_values = [2 ** k for k in range(k_max + 1)] + [710]
+    x_values = [2 ** k for k in range(k_max + 1)] + [ 710]
     n_values, VF = utils.n_needed_for_accuracy(x_values, accuracy)
 
     red_rel_error = []
@@ -44,12 +44,14 @@ if __name__ == "__main__":
     for i, x in enumerate(x_values):
         n = n_values[i]
         x_red, res_multi = utils.arg_redukt(x)
-        approx_value = res_multi*utils.sinTaylorReversed(x, n)
+        print(x)
+        print(x_red)
+        approx_value = res_multi*utils.sinTaylorReversed(x_red, n)
 
         #exact_value = math.sin(x)
         exact_value = mp.sin(x)
         #print(exact_value, " --- ", mp_value )
-        rel_error = abs(approx_value - exact_value) / abs(exact_value)
+        rel_error = abs((approx_value - exact_value) / exact_value)
 
         red_rel_error.append(rel_error)
 
