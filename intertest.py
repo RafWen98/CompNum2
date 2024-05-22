@@ -70,7 +70,7 @@ P_cheby = lagrange_interpolation(x_dense, xi_cheby, yi_cheby)
 # Compute errors
 errors_equi = compute_errors(f, lambda x: lagrange_interpolation(x, xi_equi, yi_equi), x_dense)
 errors_cheby = compute_errors(f, lambda x: lagrange_interpolation(x, xi_cheby, yi_cheby), x_dense)
-errors_clas = compute_errors(f, lambda x: yi_clas, xi_clas)
+#errors_clas = compute_errors(f, lambda x: yi_clas, xi_clas)
 
 # Plotting the results
 plt.figure(figsize=(14, 7))
@@ -90,7 +90,7 @@ plt.ylabel('f(x)')
 plt.subplot(1, 2, 2)
 plt.plot(x_dense, errors_equi, label='Error: Equidistant nodes', linestyle='dashed')
 plt.plot(x_dense, errors_cheby, label='Error: Chebyshev nodes', linestyle='dotted')
-plt.plot(xi_clas, errors_clas, label='Error: Clas nodes', linestyle='dotted')
+#plt.plot(xi_clas, errors_clas, label='Error: Clas nodes', linestyle='dotted')
 plt.yscale('log')
 plt.legend()
 plt.title('Error Comparison (Log Scale)')

@@ -19,9 +19,11 @@ def sinTaylorReversed(x_values, n_values):
     """Taylor expansion of sin(x) with n terms"""
 
     #so it can accept singel x input as well as an array of x_values as input
-    if isinstance(x_values, (float, int)):
+    if not isinstance(x_values, (list, np.ndarray)):
         x_values = [x_values]
         n_values = [n_values]
+
+    print(x_values)
     
     sum = []
     for k, x in enumerate(x_values):
@@ -102,9 +104,9 @@ def n_needed_for_accuracy(x_values, accuracy = 100*10e-16):
         return n_values, VF_values
 
 #Arg reduction code for 3.5
-def arg_redukt(x, result_multi = 1, prec = 25):
+def arg_redukt(x, result_multi = 1, prec = 15):
 
-    mp.prec = prec
+    mp.dps = prec
     pi = mp.pi
     
     #check if x is not in [0,2pi]
