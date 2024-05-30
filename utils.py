@@ -22,8 +22,13 @@ def sinTaylorReversed(x_values, n_values):
     if not isinstance(x_values, (list, np.ndarray)):
         x_values = [x_values]
         n_values = [n_values]
+    
+    #checks if only one n is given for a list of x and make a list of n
+    if isinstance(x_values, (list, np.ndarray)) and not isinstance(n_values, (list, np.ndarray)):
+        n_values = np.full(len(x_values), n_values, dtype=int)
 
-    print(x_values)
+    #print(x_values)
+    #print(n_values)
     
     sum = []
     for k, x in enumerate(x_values):

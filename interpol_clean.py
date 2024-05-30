@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import utils
 
 def f(x):
     return np.sin(x)  # Example function
@@ -31,35 +30,19 @@ def compute_errors(f, P, x):
 
 # Define the interval and the number of nodes
 a, b = 0, np.pi
-nodes = 20  # You can change this for different number of nodes
-
-# Chebyshev nodes
-""" yi_clas = []
-xi_clas = equidistant_nodes(a, b, nodes)
-for x in xi_clas:
-    n, VF = utils.n_needed_for_accuracy(x)
-    x_red, red_multi = utils.arg_redukt(x)
-    y_clas = red_multi * utils.sinTaylorReversed(x_red, n)
-    yi_clas.append(y_clas)
-print("cheby ", yi_clas) """
+n = 10  # You can change this for different number of nodes
 
 # Equidistant nodes
-xi_equi = equidistant_nodes(a, b, nodes)
-n_values, VF = utils.n_needed_for_accuracy(xi_equi)
-yi_equi = utils.sinTaylorReversed(xi_equi, n_values)
-print("equi n_values ", n_values)
-print("equi ", yi_equi)
+xi_equi = equidistant_nodes(a, b, n)
+yi_equi = f(xi_equi)
 
 # Chebyshev nodes
-xi_cheby = chebyshev_nodes(a, b, nodes)
-n_values, VF = utils.n_needed_for_accuracy(xi_cheby)
-yi_cheby = utils.sinTaylorReversed(xi_cheby, n_values)
-print("cheby ", yi_cheby)
+xi_cheby = chebyshev_nodes(a, b, n)
+yi_cheby = f(xi_cheby)
 
 # Dense grid for plotting and error analysis
 x_dense = np.linspace(a, b, 1000)
 y_true = f(x_dense)
-#print("equi ", y_true)
 
 # Interpolation at equidistant nodes
 P_equi = lagrange_interpolation(x_dense, xi_equi, yi_equi)
@@ -70,7 +53,6 @@ P_cheby = lagrange_interpolation(x_dense, xi_cheby, yi_cheby)
 # Compute errors
 errors_equi = compute_errors(f, lambda x: lagrange_interpolation(x, xi_equi, yi_equi), x_dense)
 errors_cheby = compute_errors(f, lambda x: lagrange_interpolation(x, xi_cheby, yi_cheby), x_dense)
-#errors_clas = compute_errors(f, lambda x: yi_clas, xi_clas)
 
 # Plotting the results
 plt.figure(figsize=(14, 7))
@@ -79,7 +61,6 @@ plt.subplot(1, 2, 1)
 plt.plot(x_dense, y_true, label='True function', color='black')
 plt.plot(x_dense, P_equi, label='Equidistant nodes', linestyle='dashed')
 plt.plot(x_dense, P_cheby, label='Chebyshev nodes', linestyle='dotted')
-#plt.scatter(xi_clas, yi_clas, color='green', marker='s', label='Classic nodes')
 plt.scatter(xi_equi, yi_equi, color='blue', marker='o', label='Equidistant nodes')
 plt.scatter(xi_cheby, yi_cheby, color='red', marker='x', label='Chebyshev nodes')
 plt.legend()
@@ -90,7 +71,6 @@ plt.ylabel('f(x)')
 plt.subplot(1, 2, 2)
 plt.plot(x_dense, errors_equi, label='Error: Equidistant nodes', linestyle='dashed')
 plt.plot(x_dense, errors_cheby, label='Error: Chebyshev nodes', linestyle='dotted')
-#plt.plot(xi_clas, errors_clas, label='Error: Clas nodes', linestyle='dotted')
 plt.yscale('log')
 plt.legend()
 plt.title('Error Comparison (Log Scale)')
