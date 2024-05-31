@@ -6,7 +6,7 @@ import qol
 from mpmath import mp
 
 def f(x):
-    return np.sin(x)  # Example function
+    return np.sin(x)  # set wanted function here
 
 def equidistant_nodes(a, b, n):
     return np.linspace(a, b, n)
@@ -29,9 +29,18 @@ def lagrange_interpolation(x, xi, yi):
         L += yi[j] * lagrange_basis(x, xi, j)
     return L
 
-def compute_errors(f, P, x):
-    return np.abs((f(x) - P(x)))
-    #return np.abs((f(x) - P(x))/f(x))
+def compute_errors_old(f, P, x):
+    return np.abs((f(x) - P(x))/f(x))
+    #return np.abs((f(x) - P(x))/f(x)) #relative Error (doesnt wokr cause div0 error)
+
+def compute_errors(f, P, x, threshold=1e-15):
+    f_x = f(x)
+    P_x = P(x)
+    #check for div 0 cases
+    with np.errstate(divide='ignore', invalid='ignore'):
+        relative_errors = np.abs((f_x - P_x) / np.where(np.abs(f_x) < threshold, 1.0, f_x))
+    return relative_errors
+
 
 
 
@@ -40,9 +49,8 @@ if __name__ == "__main__":
     accuracy = 100*10e-16
     mp.dps = 25
 
-    # Define the interval and the number of nodes
-    a, b = 0, np.pi
-    n_nodes = 20 # You can change this for different number of nodes
+    n_nodes = 10 # You can change this for different number of nodes
+    a, b = 0, np.pi # Define the interval and the number of nodes
 
     # Dense grid for plotting and error analysis
     x_dense = np.linspace(a, b, 1000)
@@ -53,7 +61,8 @@ if __name__ == "__main__":
     n_tay_max = np.max(utils.n_needed_for_accuracy(xi_tay))
     yi_tay = utils.sinTaylorReversed(xi_tay, n_tay_max)
 
-    #n_nodes = int(n_tay_max)
+    #redefine nr of nodes so bot calculations have "same computational work"
+    n_nodes = int(n_tay_max) #sets same polynom grad for nodes as for taylor calculated
     
     # Equidistant nodes
     xi_equi = equidistant_nodes(a, b, n_nodes)
@@ -80,16 +89,11 @@ if __name__ == "__main__":
     #print(exact_value, " --- ", mp_value )
     #errors_tay = abs((yi_tay - exact_value) / exact_value)
 
-
-
     # Plotting the results
     plt.figure(figsize=(14, 7))
 
     plt.subplot(1, 2, 1)
     plt.plot(x_dense, y_true, label='True function', color='black')
-    #plt.plot(x_dense, P_equi, label='Equidistant nodes', linestyle='dashed')
-    #plt.plot(x_dense, P_cheby, label='Chebyshev nodes', linestyle='dotted')
-    #plt.plot(x_dense, P_tay, label='Sin Taylor Reversed', linestyle=':')
     plt.scatter(xi_tay, yi_tay, color='g', marker='s', label='Sin Taylor Reversed')
     plt.scatter(xi_equi, yi_equi, color='blue', marker='o', label='Equidistant nodes')
     plt.scatter(xi_cheby, yi_cheby, color='orange', marker='x', label='Chebyshev nodes')
