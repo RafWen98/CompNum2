@@ -33,7 +33,7 @@ if __name__ == "__main__":
     accuracy = 100*10e-16
     k_max = 8
 
-    precision = 25
+    precision = 16
     mp.dps = precision
 
     x_values = [2 ** k for k in range(k_max + 1)] + [710]
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         x_red, res_multi = utils.arg_redukt(x, prec=precision)
         approx_value = res_multi*utils.sinTaylorReversed(x_red, n)
 
-        #exact_value = math.sin(x)
+        #approx_value = res_multi * mp.sin(x_red)
         exact_value = mp.sin(x)
         #print(exact_value, " --- ", mp_value )
         rel_error = abs((approx_value - exact_value) / exact_value)
@@ -61,6 +61,6 @@ if __name__ == "__main__":
     #calc diff of reversed summation and reduced reversed summation
     diff_rev = Rel_errors_rev - red_rel_error
 
-    headers = ['x', 'n', 'Rel_error_natuerlich', 'Rel_error_reversed', 'Rel_error_reduced', 'diff']
+    headers = ['x', 'n', 'Rel_error_natuerlich', 'Rel_error_reversed', 'Rel_error_reduced_rev_16', 'diff']
     int_cols = ['x', 'n']
     utils.plot_table(x_values, n_values, Rel_errors, Rel_errors_rev, red_rel_error, diff_rev, headers=headers, int_columns=int_cols, savefig=savefig, size = (14,6))
