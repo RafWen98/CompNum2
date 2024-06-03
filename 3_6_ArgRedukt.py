@@ -33,7 +33,7 @@ if __name__ == "__main__":
     accuracy = 100*10e-16
     k_max = 8
 
-    precision = 16
+    precision = 25
     mp.dps = precision
 
     x_values = [2 ** k for k in range(k_max + 1)] + [710]
@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     for i, x in enumerate(x_values):
         n = n_values[i]
-        x_red, res_multi = utils.arg_redukt(x, prec=25)
+        x_red, res_multi = utils.arg_redukt(x, prec=precision)
         approx_value = res_multi*utils.sinTaylorReversed(x_red, n)
 
         #exact_value = math.sin(x)
